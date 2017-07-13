@@ -5,6 +5,7 @@ A. JAFFE
 ABC Entertainment
 Adidas
 Adidas Boost
+Advertisement
 Airbnb
 Applebee's
 Attraction Formula
@@ -50,6 +51,7 @@ HealthCare.gov
 Hot Pockets
 Illuminite
 LEARN MORE
+Learn More
 Levi
 Levi's
 Lionsgate
@@ -83,10 +85,12 @@ Red Bull
 Samsung
 Sheetz
 Shell
+Shop Now
 Sony Music
 Sony Music US (InHouse)
 Sony Pictures
 Sony Vaio
+Sport Clips
 Spotify
 Spotify In-House EU (InHouse)
 Spotify Premium
@@ -103,6 +107,7 @@ The Home Depot
 Tonight
 Trojan USA
 Truth
+TXU
 Universal Music
 Universal Music US (InHouse)
 Universal Pictures
