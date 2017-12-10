@@ -31,6 +31,7 @@ public class CustomNotificationListener extends NotificationListenerService {
     private int zeroVolume;
     private static Timer timer;
     private static boolean running;
+    private static String currentTitle;
     private HashSet<String> blocklist;
 
     @Override
@@ -82,6 +83,7 @@ public class CustomNotificationListener extends NotificationListenerService {
                     if (foundNotification) {
                         Bundle extras = notification.extras;
                         String title = extras.getCharSequence(Notification.EXTRA_TITLE).toString();
+                        currentTitle = title;
                         if (title != null) {
                             Log.d("DEBUG", title);
                             boolean isAdPlaying = blocklist.contains(title);
@@ -130,4 +132,8 @@ public class CustomNotificationListener extends NotificationListenerService {
 
     @Override
     public void onNotificationRemoved(StatusBarNotification notification) { }
+
+    public static String getCurrentTitle() {
+        return currentTitle;
+    }
 }

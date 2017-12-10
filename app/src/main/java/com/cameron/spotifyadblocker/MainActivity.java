@@ -67,10 +67,18 @@ public class MainActivity extends AppCompatActivity implements ViewAdditionalFil
         SharedPreferences.Editor preferencesEditor = getSharedPreferences(getString(R.string.saved_filters), MODE_PRIVATE).edit();
         EditText et = (EditText)view.getRootView().findViewById(R.id.editTextAddFilter);
         String newFilter = et.getText().toString();
-        et.setText("");
-        preferencesEditor.putString("filter_" + newFilter, newFilter);
-        preferencesEditor.apply();
-        Toast.makeText(this, "Added filter: " + newFilter, Toast.LENGTH_SHORT).show();
+        if (!newFilter.equals("")) {
+            et.setText("");
+            preferencesEditor.putString("filter_" + newFilter, newFilter);
+            preferencesEditor.apply();
+            Toast.makeText(this, "Added filter: " + newFilter, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void addCurrent(View view) {
+        EditText et = findViewById(R.id.editTextAddFilter);
+        et.setText(CustomNotificationListener.getCurrentTitle());
+        this.addAdditionalFilter(findViewById(R.id.buttonAddFilter));
     }
 
     public void openAdditionalFilterListDialog(View view) {

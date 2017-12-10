@@ -101,10 +101,20 @@
         android:textAlignment="center" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/buttonAddCurrent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:onClick="addCurrent"
+        android:text="Add Current Title" />
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonAddCurrent"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:onClick="openAdditionalFilterListDialog"
