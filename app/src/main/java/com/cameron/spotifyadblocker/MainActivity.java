@@ -1,9 +1,11 @@
 package com.cameron.spotifyadblocker;
 
+import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -45,6 +47,9 @@ public class MainActivity extends AppCompatActivity implements ViewAdditionalFil
     }
 
     public void onCheckboxClick(View view) {
+        if(!NotificationManagerCompat.getEnabledListenerPackages(this).contains("com.cameron.spotifyadblocker")) {
+            Toast.makeText(this, "Notification access denied", Toast.LENGTH_LONG).show();
+        }
         if (enabled) {
             Log.d("DEBUG", "Stopping Service");
             CustomNotificationListener.killService();
@@ -73,6 +78,9 @@ public class MainActivity extends AppCompatActivity implements ViewAdditionalFil
             preferencesEditor.apply();
             Toast.makeText(this, "Added filter: " + newFilter, Toast.LENGTH_SHORT).show();
         }
+        //toggle service
+        this.onCheckboxClick(findViewById(R.id.checkBox));
+        this.onCheckboxClick(findViewById(R.id.checkBox));
     }
 
     public void addCurrent(View view) {

@@ -97,7 +97,7 @@
         android:layout_alignEnd="@+id/relativeLayout2"
         android:layout_alignStart="@+id/relativeLayout2"
         android:layout_below="@+id/buttonAddFilter"
-        android:text="If you hear an ad, you can add the title to the filter list. Toggle blocking to apply changes."
+        android:text="If you hear an ad, you can add the title to the filter list."
         android:textAlignment="center" />
 
     <Button
