@@ -8,7 +8,7 @@
     tools:context="com.cameron.spotifyadblocker.MainActivity"
     android:background="#e0e0e0">
 
-    <android.support.v7.widget.Toolbar
+    <androidx.appcompat.widget.Toolbar
         android:id="@+id/my_toolbar"
         android:layout_width="fill_parent"
         android:layout_height="?attr/actionBarSize"

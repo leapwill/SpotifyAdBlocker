@@ -3,4 +3,8 @@
     <string name="title_activity_main2">Main2Activity</string>
     <string name="saved_enabled">enabled</string>
     <string name="saved_filters">additionalFilters</string>
+    <string name="channel_name">Foreground Service</string>
+    <string name="channel_description">Keep the app alive in the background</string>
+    <string name="service_notification_channel">foreground_service</string>
+    <string name="INTENT_ACTION_DISABLE">com.cameron.spotifyadblocker.action.STOP</string>
 </resources>

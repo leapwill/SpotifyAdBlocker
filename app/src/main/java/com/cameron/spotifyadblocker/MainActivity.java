@@ -1,18 +1,22 @@
 package com.cameron.spotifyadblocker;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationManagerCompat;
+
 import java.util.Collection;
 
 public class MainActivity extends AppCompatActivity implements ViewAdditionalFiltersDialogFragment.ViewAdditionalFiltersDialogListener {
@@ -25,12 +29,19 @@ public class MainActivity extends AppCompatActivity implements ViewAdditionalFil
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-        serviceIntent = new Intent(this, CustomNotificationListener.class);
+        serviceIntent = new Intent(this, ReceiverForegroundService.class);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(getString(R.string.service_notification_channel), getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW);
+            channel.setDescription(getString(R.string.channel_description));
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(channel);
+        }
     }
 
     @Override
     protected void onResume()
     {
+        // FIXME how to handle STOP action
         super.onResume();
         restoreCheckboxState();
     }
@@ -42,21 +53,26 @@ public class MainActivity extends AppCompatActivity implements ViewAdditionalFil
         enabled = preferences.getBoolean(getString(R.string.saved_enabled), enabled);
         CheckBox enabledCheckbox = (CheckBox) findViewById(R.id.checkBox);
         enabledCheckbox.setChecked(enabled);
-        if(enabled && !CustomNotificationListener.isRunning())
-            startService(serviceIntent);
+        if (enabled) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent);
+            } else {
+                startService(serviceIntent);
+            }
+        }
     }
 
     public void onCheckboxClick(View view) {
-        if(!NotificationManagerCompat.getEnabledListenerPackages(this).contains("com.cameron.spotifyadblocker")) {
-            Toast.makeText(this, "Notification access denied", Toast.LENGTH_LONG).show();
-        }
         if (enabled) {
             Log.d("DEBUG", "Stopping Service");
-            CustomNotificationListener.killService();
             stopService(serviceIntent);
             enabled = false;
-        } else if (!CustomNotificationListener.isRunning()){
-            startService(serviceIntent);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(serviceIntent);
+            } else {
+                startService(serviceIntent);
+            }
             enabled = true;
         }
         SharedPreferences.Editor preferencesEditor = getSharedPreferences(getString(R.string.saved_enabled), MODE_PRIVATE).edit();
@@ -85,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements ViewAdditionalFil
 
     public void addCurrent(View view) {
         EditText et = findViewById(R.id.editTextAddFilter);
-        et.setText(CustomNotificationListener.getCurrentTitle());
+        et.setText(Util.getInstance(this).getCurrentTitle());
         this.addAdditionalFilter(findViewById(R.id.buttonAddFilter));
     }
 
