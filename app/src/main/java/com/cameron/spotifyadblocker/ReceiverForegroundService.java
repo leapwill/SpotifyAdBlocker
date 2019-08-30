@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
+import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
@@ -25,7 +26,7 @@ public class ReceiverForegroundService extends Service {
         filter.addAction("com.spotify.music.metadatachanged");
 
         // Create persistent notification
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, ReceiverForegroundService.class);
         intent.setAction(getString(R.string.INTENT_ACTION_DISABLE));
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.service_notification_channel))
@@ -41,8 +42,12 @@ public class ReceiverForegroundService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        this.registerReceiver(broadcastReceiver, filter);
-        return super.onStartCommand(intent, flags, startId);
+        if (intent != null && getString(R.string.INTENT_ACTION_DISABLE).equals(intent.getAction())) {
+            stopForeground(true);
+        } else {
+            this.registerReceiver(broadcastReceiver, filter);
+        }
+        return START_NOT_STICKY;
     }
 
     @Override

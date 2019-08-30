@@ -1,9 +1,11 @@
 package com.cameron.spotifyadblocker;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.media.AudioManager;
+import android.os.Build;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -25,6 +27,8 @@ class Util {
     private int zeroVolume;
     private static String currentTitle;
     private HashSet<String> blocklist;
+
+    private Intent serviceIntent;
 
     private Util(Context context) {
         this.context = context;
@@ -57,19 +61,19 @@ class Util {
     }
 
     void checkSpotifyNotification(String title) {
+        Log.v("SAB_Util", "Checking title " + title);
         currentTitle = title;
         if (title != null) {
-            Log.d("DEBUG", title);
             boolean isAdPlaying = blocklist.contains(title);
-            String s = isAdPlaying? "Ad playing" : "Ad not playing";
-            Log.d("DEBUG", s);
+            if (isAdPlaying) {
+                Log.d("SAB_Util", "Found ad with title " + title);
+            }
             AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             if (isAdPlaying && !muted) {
                 originalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, zeroVolume, AudioManager.FLAG_SHOW_UI);
                 muted = true;
-            }
-            else if (!isAdPlaying && muted) {
+            } else if (!isAdPlaying && muted) {
                 audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, originalVolume, AudioManager.FLAG_SHOW_UI);
                 muted = false;
             }
@@ -79,4 +83,29 @@ class Util {
     String getCurrentTitle() {
         return currentTitle;
     }
+
+    public void setServiceIntent(Intent serviceIntent) {
+        this.serviceIntent = serviceIntent;
+    }
+
+    void enableBlocking() {
+        Log.d("SAB_Util", "Starting Service");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(serviceIntent);
+        } else {
+            context.startService(serviceIntent);
+        }
+        SharedPreferences.Editor preferencesEditor = context.getSharedPreferences(context.getString(R.string.saved_enabled), MODE_PRIVATE).edit();
+        preferencesEditor.putBoolean(context.getString(R.string.saved_enabled), true);
+        preferencesEditor.apply();
+    }
+
+    void disableBlocking() {
+        Log.d("SAB_Util", "Stopping Service");
+        context.stopService(serviceIntent);
+        SharedPreferences.Editor preferencesEditor = context.getSharedPreferences(context.getString(R.string.saved_enabled), MODE_PRIVATE).edit();
+        preferencesEditor.putBoolean(context.getString(R.string.saved_enabled), false);
+        preferencesEditor.apply();
+    }
+
 }

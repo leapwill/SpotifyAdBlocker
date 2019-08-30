@@ -67,6 +67,7 @@ captures/
 /app/build/outputs/lint-results-release-fatal.xml
 /app/build/outputs/apk/app-debug-unaligned.apk
 /app/build/outputs/apk/app-debug.apk
+/app/debug/
 
 # External native build folder generated in Android Studio 2.2 and later
 .externalNativeBuild

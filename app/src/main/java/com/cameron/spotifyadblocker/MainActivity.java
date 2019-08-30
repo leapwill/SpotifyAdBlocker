@@ -21,7 +21,6 @@ import java.util.Collection;
 
 public class MainActivity extends AppCompatActivity implements ViewAdditionalFiltersDialogFragment.ViewAdditionalFiltersDialogListener {
     private boolean enabled;
-    private Intent serviceIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity implements ViewAdditionalFil
         setContentView(R.layout.activity_main);
         Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
         setSupportActionBar(myToolbar);
-        serviceIntent = new Intent(this, ReceiverForegroundService.class);
+        Util.getInstance(this).setServiceIntent(new Intent(this, ReceiverForegroundService.class));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(getString(R.string.service_notification_channel), getString(R.string.channel_name), NotificationManager.IMPORTANCE_LOW);
             channel.setDescription(getString(R.string.channel_description));
@@ -39,54 +38,35 @@ public class MainActivity extends AppCompatActivity implements ViewAdditionalFil
     }
 
     @Override
-    protected void onResume()
-    {
-        // FIXME how to handle STOP action
+    protected void onResume() {
         super.onResume();
         restoreCheckboxState();
     }
 
-    private void restoreCheckboxState()
-    {
+    private void restoreCheckboxState() {
         enabled = false;
         SharedPreferences preferences = getSharedPreferences(getString(R.string.saved_enabled), MODE_PRIVATE);
         enabled = preferences.getBoolean(getString(R.string.saved_enabled), enabled);
         CheckBox enabledCheckbox = (CheckBox) findViewById(R.id.checkBox);
         enabledCheckbox.setChecked(enabled);
         if (enabled) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(serviceIntent);
-            } else {
-                startService(serviceIntent);
-            }
+            Util.getInstance(this).enableBlocking();
         }
     }
 
     public void onCheckboxClick(View view) {
         if (enabled) {
-            Log.d("DEBUG", "Stopping Service");
-            stopService(serviceIntent);
+            Util.getInstance(this).disableBlocking();
             enabled = false;
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(serviceIntent);
-            } else {
-                startService(serviceIntent);
-            }
+            Util.getInstance(this).enableBlocking();
             enabled = true;
         }
-        SharedPreferences.Editor preferencesEditor = getSharedPreferences(getString(R.string.saved_enabled), MODE_PRIVATE).edit();
-        preferencesEditor.putBoolean(getString(R.string.saved_enabled), enabled);
-        preferencesEditor.apply();
-    }
-
-    public void notificationAccess(View view) {
-        startActivity(new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"));
     }
 
     public void addAdditionalFilter(View view) {
         SharedPreferences.Editor preferencesEditor = getSharedPreferences(getString(R.string.saved_filters), MODE_PRIVATE).edit();
-        EditText et = (EditText)view.getRootView().findViewById(R.id.editTextAddFilter);
+        EditText et = (EditText) view.getRootView().findViewById(R.id.editTextAddFilter);
         String newFilter = et.getText().toString();
         if (!newFilter.equals("")) {
             et.setText("");

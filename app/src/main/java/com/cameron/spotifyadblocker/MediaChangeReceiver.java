@@ -12,8 +12,9 @@ public class MediaChangeReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Util util = Util.getInstance(context);
         CharSequence title = intent.getCharSequenceExtra("track");
+        Log.v("SAB_MCReceiver", "Received intent with 'track' extra " + title);
+        Util util = Util.getInstance(context);
         if (title != null) {
             util.checkSpotifyNotification(title.toString());
         }
