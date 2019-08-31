@@ -3,8 +3,10 @@ package com.cameron.spotifyadblocker;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -26,9 +28,9 @@ public class ReceiverForegroundService extends Service {
         filter.addAction("com.spotify.music.metadatachanged");
 
         // Create persistent notification
-        Intent intent = new Intent(this, ReceiverForegroundService.class);
-        intent.setAction(getString(R.string.INTENT_ACTION_DISABLE));
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
+        Intent intent = new Intent(this, ReceiverForegroundService.class)
+                .setAction(getString(R.string.INTENT_ACTION_DISABLE));
+        PendingIntent pendingIntent = PendingIntent.getService(this, 0, intent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, getString(R.string.service_notification_channel))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle("Running in background")
@@ -43,6 +45,7 @@ public class ReceiverForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && getString(R.string.INTENT_ACTION_DISABLE).equals(intent.getAction())) {
+            Util.getInstance(this).disableBlocking();
             stopForeground(true);
         } else {
             this.registerReceiver(broadcastReceiver, filter);
